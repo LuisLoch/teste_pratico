@@ -1,0 +1,18 @@
+{
+    "name": "empan/blegon",
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        },
+        "files": [
+            "config.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Luís",
+            "email": "802.250@alunos.unigran.br"
+        }
+    ],
+    "require": {}
+}
