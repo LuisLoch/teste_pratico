@@ -17,7 +17,7 @@
         <span class="marca">{{ car.marca }}</span>
         <span class="ano">{{ car.ano }}</span>
         <div class="actions">
-          <button  class="update">Editar</button>
+          <button @click="updateCar(car)" class="update">Editar</button>
           <button @click="deleteCar(car.id)" class="delete">Excluir</button>
         </div>
       </li>
@@ -28,9 +28,21 @@
 <script>
 import { mapState } from 'vuex'
 import { useRouter } from 'vue-router'
+import axios from 'axios';
 
 export default {
   name: 'CarrosPage',
+
+  created() {
+    this.$store.dispatch('loadCars');
+  },
+
+  mounted() {
+    if (this.$store.state.props.reloadFlag) {
+      this.$store.dispatch('bindReloadFlag');
+      window.location.reload();
+    }
+  },
 
   computed: mapState([
     'cars',
@@ -40,6 +52,27 @@ export default {
     createCar() {
       const router = useRouter()
       router.push({ name: 'CarrosCadastroPage'})
+    },
+    deleteCar(id) {
+      if (confirm("Excluir carro?")) {
+        const formData = new FormData()
+        formData.append('_method', 'delete');
+
+        axios.post(`http://localhost/blegon/backend/api/cars/${id}`, formData)
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+
+        location.reload()
+      }
+    },
+    updateCar(car) {
+      this.$store.dispatch('setCarsProps', { carId: car.id, carModel: car.modelo, carBrand: car.marca, carYear: car.ano, carOwner: car.dono });
+      console.log(this.$store.state.props.cars)
+      this.$router.push({ name: 'CarrosEditarPage' })
     }
   }
 }

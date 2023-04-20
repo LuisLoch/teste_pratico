@@ -11,14 +11,14 @@
         </div>
       </li>
       <hr>
-      <li class="customer" v-for="(customer, index) in customers" :class="{ par: !(index%2) }" v-bind:key="index">
+      <li class="customer" v-for="(customer, index) in customers" :class="{ par: !(index % 2) }" v-bind:key="index">
         <span class="id">{{ customer.id }}</span>
         <span class="nome">{{ customer.nome }}</span>
         <span class="data_nasc">{{ customer.data_nasc }}</span>
         <span class="sexo">{{ customer.sexo }}</span>
         <div class="actions">
-          <button @click="this.$router.push({ name: 'CarrosCadastroPage', params: { id: customer.id} })" class="create">+Carro</button>
-          <button @click="updateCustomer(customer.id)" class="edit">Editar</button>
+          <button @click="createCarWithCustomer(customer.id)" class="create">+Carro</button>
+          <button @click="updateCustomer(customer)" class="edit">Editar</button>
           <button @click="deleteCustomer(customer.id)" class="delete">Excluir</button>
         </div>
       </li>
@@ -33,25 +33,46 @@ import axios from 'axios';
 export default {
   name: 'ClientesPage',
 
+  created() {
+    this.$store.dispatch('loadCustomers');
+  },
+
+  mounted() {
+    if (this.$store.state.props.reloadFlag) {
+      this.$store.dispatch('bindReloadFlag');
+      window.location.reload();
+    }
+  },
+
   computed: mapState([
     'customers',
   ]),
 
   methods: {
-    deleteCustomer(id) {
-      const formData = new FormData()
-      formData.append('_method', 'delete');
-
-      axios.post(`http://localhost/blegon/backend/api/customers/${id}`, formData)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      
-        location.reload()
+    createCarWithCustomer(id) {
+      this.$store.dispatch('setCarsProps', { customerId: id });
+      this.$router.push({ name: 'CarrosCadastroPageComCliente' })
     },
+    deleteCustomer(id) {
+      if (confirm("Excluir cliente?")) {
+        const formData = new FormData()
+        formData.append('_method', 'delete');
+
+        axios.post(`http://localhost/blegon/backend/api/customers/${id}`, formData)
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+
+        location.reload()
+      }
+    },
+    updateCustomer(customer) {
+      this.$store.dispatch('setCustomersProps', { customerId: customer.id, customerName: customer.nome, customerBirth: customer.data_nasc, customerSex: customer.sexo });
+      this.$router.push({ name: 'ClientesEditarPage' })
+    }
   }
 }
 </script>
@@ -69,7 +90,8 @@ export default {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.customer, .label {
+.customer,
+.label {
   padding: 0.5vh 0 0.5vh;
   display: flex;
 }
@@ -84,17 +106,21 @@ span {
   background-color: transparent;
 }
 
-.customers, .customer {
+.customers,
+.customer {
 
   span.id {
     width: 7%;
   }
+
   span.nome {
     width: 40%;
   }
+
   span.data_nasc {
     width: 12%;
   }
+
   span.sexo {
     width: 7%;
   }
@@ -105,7 +131,7 @@ span {
     justify-content: flex-end;
     width: 34%;
     margin-right: 2px;
-    
+
     button {
       border-radius: 5px;
       text-align: center;
@@ -115,12 +141,14 @@ span {
       margin-left: 1%;
     }
 
-    .delete{
+    .delete {
       background-color: #FF4500;
     }
+
     .edit {
       background-color: #00BFFF;
     }
+
     .create {
       background-color: #00FF7F;
     }
@@ -128,15 +156,14 @@ span {
 }
 
 .customers span {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .customer span {
-    font-weight: 500;
-    overflow: hidden;
+  font-weight: 500;
+  overflow: hidden;
 }
 
 .par {
   background-color: #fefefe;
-}
-</style>
+}</style>

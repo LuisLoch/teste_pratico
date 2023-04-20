@@ -79,7 +79,6 @@ export default defineComponent({
       this.chartData.datasets[1].data = [{ x: 10, y: 10, r: data.data[1].numero_carros}]
       this.chartData.datasets[2].label = 'Total'
       this.chartData.datasets[2].data = [{ x: 15, y: 10, r: (data.data[0].numero_carros + data.data[1].numero_carros)}]
-      console.log(data.data)
     }
   },
   beforeUnmount() {

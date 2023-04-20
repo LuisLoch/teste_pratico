@@ -7,9 +7,10 @@ export default createStore({
     cars: [],
     reviews: [],
     props: {
-      cars: [],
-      customers: [],
-      reviews: []
+      cars: {},
+      customers: {},
+      reviews: {},
+      reloadFlag: false
     }
   },
   mutations: {
@@ -22,18 +23,17 @@ export default createStore({
     loadReviews(state, reviews) {
       state.reviews = reviews['data'];
     },
-    loadBag(state, products) {
-      console.log(products)
-      state.productsInBag = products
+    setCarsProps(state, carsProps) {
+      state.props.cars = carsProps
     },
-    addToBag(state, product) {
-      state.productsInBag.push(product)
-      localStorage.setItem('productsInBag', JSON.stringify(state.productsInBag))
+    setCustomersProps(state, customersProps) {
+      state.props.customers = customersProps
     },
-    removeFromBag(state, productId) {
-      var updatedBag = state.productsInBag.filter(item => productId != item.id)
-      state.productsInBag = updatedBag
-      localStorage.setItem('productsInBag', JSON.stringify(state.productsInBag))
+    setReviewsProps(state, reviewsProps) {
+      state.props.reviews = reviewsProps
+    },
+    bindReloadFlag(state) {
+      state.props.reloadFlag = !state.props.reloadFlag
     }
   },
   actions: {
@@ -55,18 +55,17 @@ export default createStore({
         commit('loadReviews', response.data)
       })
     },
-    loadBag({ commit }) {
-      if(localStorage.getItem('productsInBag')) {
-        commit('loadBag', JSON.parse(localStorage.getItem('productsInBag')))
-      }
+    setCarsProps({ commit }, carsProps) {
+      commit('setCarsProps', carsProps)
     },
-    addToBag({ commit }, product) {
-      commit('addToBag', product)
+    setCustomersProps({ commit }, customersProps) {
+      commit('setCustomersProps', customersProps)
     },
-    removeFromBag({ commit }, productId) {
-      if(confirm("Deseja realmente remover o produto do carrinho?")) {
-        commit('removeFromBag', productId)
-      }
+    setReviewsProps({ commit }, reviewsProps) {
+      commit('setReviewsProps', reviewsProps)
+    },
+    bindReloadFlag({ commit }) {
+      commit('bindReloadFlag')
     }
   },
   modules: {

@@ -14,6 +14,13 @@
         <label for="ano">Ano</label>
         <input type="text" id="ano" name="ano" v-model="ano" placeholder="Digite o ano de fabricação">
       </div>
+      <div class="input-container">
+        <label for="cliente">Cliente</label>
+        <select id="cliente" name="cliente" v-model="clienteId">
+          <option value="" selected disabled>Selecione o cliente</option>
+          <option v-for="(customer, index) in customers" :key="index" :class="{ par: (index % 2) }" :value="customer.id">{{ customer.nome }}</option>
+        </select>
+      </div>
       <button id="submit-btn" type="submit">Cadastrar</button>
       <button @click="$router.go(-1)" id="cancel-btn" type="button">Cancelar</button>
     </form>
@@ -26,18 +33,14 @@ import axios from 'axios';
 
 export default {
   name: 'CarrosCadastroPage',
-  
+
   data() {
     return {
       modelo: '',
       marca: '',
       ano: '',
+      clienteId: ''
     }
-  },
-
-  created() {
-    console.log(this.id)
-    console.log(this.$route.id)
   },
 
   computed: mapState([
@@ -46,6 +49,7 @@ export default {
 
   methods: {
     submit() {
+      console.log("modelo: "+this.modelo, "marca: "+this.marca, "ano: "+this.ano, "cliente: "+this.clienteId)
       //checagem da existência das variáveis
       if (!this.modelo || !this.marca || !this.ano || !this.clienteId) {
         alert("Preencha todos os campos corretamente.")
@@ -85,6 +89,7 @@ export default {
 #car-form {
   margin: 0 auto;
   border-radius: 5px;
+  width: 60%;
 }
 
 .input-container {

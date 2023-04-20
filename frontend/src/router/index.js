@@ -7,6 +7,9 @@ import CarrosCadastroPage from '../views/CarrosCadastroPage.vue'
 import CarrosCadastroPageComCliente from '../views/CarrosCadastroPageComCliente.vue'
 import ClientesCadastroPage from '../views/ClientesCadastroPage.vue'
 import ReviewsCadastroPage from '../views/ReviewsCadastroPage.vue'
+import CarrosEditarPage from '../views/CarrosEditarPage.vue'
+import ClientesEditarPage from '../views/ClientesEditarPage.vue'
+import ReviewsEditarPage from '../views/ReviewsEditarPage.vue'
 
 const routes = [
   {
@@ -35,7 +38,7 @@ const routes = [
     component: CarrosCadastroPage
   },
   {
-    path: '/cars/create/:id',
+    path: '/cars/createwithcustomer',
     name: 'CarrosCadastroPageComCliente',
     component: CarrosCadastroPageComCliente
   },
@@ -48,6 +51,21 @@ const routes = [
     path: '/reviews/create',
     name: 'ReviewsCadastroPage',
     component: ReviewsCadastroPage
+  },
+  {
+    path: '/cars/edit',
+    name: 'CarrosEditarPage',
+    component: CarrosEditarPage
+  },
+  {
+    path: '/customers/edit',
+    name: 'ClientesEditarPage',
+    component: ClientesEditarPage
+  },
+  {
+    path: '/reviews/edit',
+    name: 'ReviewsEditarPage',
+    component: ReviewsEditarPage
   },
 ]
 

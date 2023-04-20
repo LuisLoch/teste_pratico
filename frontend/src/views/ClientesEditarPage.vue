@@ -1,25 +1,24 @@
 <template>
   <div class="main-container">
-    <h1>NOVO CLIENTE</h1>
+    <h1>EDITAR CLIENTE</h1>
     <form @submit.prevent="submit" id="customer-form">
       <div class="input-container">
         <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome" v-model="nome" placeholder="Digite o nome do cliente">
+        <input type="text" id="nome" name="nome" v-model="nome" placeholder="Novo nome">
       </div>
       <div class="input-container">
         <label>Data de nascimento:</label>
-        <VueDatePicker v-model="dataNasc" :show-time="false" :format="'yyyy-MM-dd'"/>
+        <VueDatePicker v-model="dataNasc" :show-time="false" :format="'yyyy-MM-dd'" :time-zone="'America/Sao_Paulo'"/>
       </div>
       <div class="input-container">
         <label for="sexo">Sexo:</label>
         <select id="sexo" name="sexo" v-model="sexo">
-          <option value="" selected disabled>Selecione o sexo</option>
           <option value="masc">Masculino</option>
           <option value="fem">Feminino</option>
         </select>
       </div>
-      <button id="submit-btn" type="submit">Cadastrar</button>
-      <button @click="$router.go(-1)" id="cancel-btn" type="button">Cancelar</button>
+      <button id="submit-btn" type="submit">Editar</button>
+      <button @click="cancel()" id="cancel-btn" type="button">Cancelar</button>
     </form>
   </div>
 </template>
@@ -30,14 +29,17 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 export default {
-  name: 'ClientesCadastroPage',
+  name: 'ClientesEditarPage',
 
   data() {
     return {
-      nome: '',
-      dataNasc: '',
-      sexo: ''
+      nome: this.$store.state.props.customers.customerName,
+      dataNasc: this.$store.state.props.customers.customerBirth,
+      sexo: this.$store.state.props.customers.customerSex
     }
+  },
+  
+  created() {
   },
 
   components: {
@@ -75,8 +77,11 @@ export default {
       formData.append('name', this.nome);
       formData.append('birth_date', this.dataNasc);
       formData.append('sex', this.sexo);
+      formData.append('_method', 'put');
 
-      axios.post('http://localhost/blegon/backend/api/customers', formData)
+      const idUrl = this.$store.state.props.customers.customerId
+
+      axios.post(`http://localhost/blegon/backend/api/customers/${idUrl}`, formData)
         .then(response => {
           console.log(response.data);
         })
@@ -84,9 +89,15 @@ export default {
           console.log(error);
         });
       
-      location.reload()
+      this.$store.dispatch('setCustomersProps', {});
+      this.$router.push({ name: 'ClientesPage' });
+      this.$store.dispatch('bindReloadFlag');
+    },
+    cancel() {
+      this.$store.dispatch('setCustomersProps', {});
+      this.$router.go(-1)
     }
-  }
+  },
 }
 
 </script>

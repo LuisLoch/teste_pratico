@@ -26,11 +26,11 @@ export default defineComponent({
       },
       lineOptions: {
         scales: {
-          yAxes: [{
+          y: {
             ticks: {
               beginAtZero: true
             }
-          }]
+          }
         }
       }
     };

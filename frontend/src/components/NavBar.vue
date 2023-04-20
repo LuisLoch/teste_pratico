@@ -12,7 +12,7 @@
     <router-link to="/cars">
       Carros
     </router-link>
-    <router-link to="/reviews">
+    <router-link to="/reviews" @click="clearProps()">
       Reviews
     </router-link>
   </div>
@@ -21,6 +21,14 @@
 <script>
 export default {
   name: "NavBar",
+
+  methods: {
+    clearProps() {
+      this.$store.dispatch('setCarsProps', {});
+      this.$store.dispatch('setCustomersProps', {});
+      this.$store.dispatch('setReviewsProps', {});
+    }
+  }
 }
 
 </script>

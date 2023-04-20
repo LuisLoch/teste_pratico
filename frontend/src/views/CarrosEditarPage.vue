@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-    <h1>NOVO CARRO</h1>
+    <h1>EDITAR CARRO</h1>
     <form @submit.prevent="submit" id="car-form">
       <div class="input-container">
         <label for="modelo">Modelo</label>
@@ -14,14 +14,17 @@
         <label for="ano">Ano</label>
         <input type="text" id="ano" name="ano" v-model="ano" placeholder="Digite o ano de fabricação">
       </div>
-      <button id="submit-btn" type="submit">Cadastrar</button>
+      <div class="input-container">
+        <label for="clienteId">Cliente</label>
+        <input disabled type="text" id="clienteId" name="clienteId" v-model="clienteId">
+      </div>
+      <button id="submit-btn" type="submit">Editar</button>
       <button @click="cancel()" id="cancel-btn" type="button">Cancelar</button>
     </form>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import axios from 'axios';
 
 export default {
@@ -29,22 +32,15 @@ export default {
 
   data() {
     return {
-      modelo: '',
-      marca: '',
-      ano: '',
-      clienteId: undefined
+      modelo: this.$store.state.props.cars.carModel,
+      marca: this.$store.state.props.cars.carBrand,
+      ano: this.$store.state.props.cars.carYear,
+      clienteId: this.$store.state.props.cars.carOwner
     }
   },
 
   created() {
-    this.clienteId = this.$store.state.props.cars.customerId
-    console.log(this.$store.state.props.cars.customerId)
-    console.log(this.clienteId)
   },
-
-  computed: mapState([
-    'customers'
-  ]),
 
   methods: {
     submit() {
@@ -68,8 +64,11 @@ export default {
       formData.append('brand', this.marca);
       formData.append('year', this.ano);
       formData.append('owner_id', this.clienteId);
+      formData.append('_method', 'put')
 
-      axios.post('http://localhost/blegon/backend/api/cars', formData)
+      const idUrl = this.$store.state.props.cars.carId
+
+      axios.post(`http://localhost/blegon/backend/api/cars/${idUrl}`, formData)
         .then(response => {
           console.log(response.data);
         })
@@ -77,12 +76,12 @@ export default {
           console.log(error);
         });
 
-      this.$store.state.props.cars = undefined
-      this.$router.push({ name: 'ClientesPage' })
+      this.$store.dispatch('setCarsProps', {});
+      this.$router.push({ name: 'CarrosPage' });
+      this.$store.dispatch('bindReloadFlag');
     },
-
     cancel() {
-      this.$store.state.props.cars = undefined
+      this.$store.dispatch('setCarsProps', {});
       this.$router.go(-1)
     }
   }

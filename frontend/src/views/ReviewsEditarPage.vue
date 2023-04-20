@@ -3,13 +3,8 @@
     <h1>NOVA REVISÃO</h1>
     <form @submit.prevent="submit" id="review-form">
       <div class="input-container">
-        <label for="carro">Carro:</label>
-        <select id="carro" name="carro" v-model="carroId">
-          <option value="" selected disabled>Selecione o carro</option>
-          <option v-for="(car, index) in cars" :key="index" :class="{ par: (index % 2) }" :value="car.id">
-            {{ car.modelo+" - "+customers.find((customer) => car.dono == customer.id).nome }}
-          </option>
-        </select>
+        <label for="carro">Carro</label>
+        <input type="text" id="carro" name="carro" v-model="carroId" disabled>
       </div>
       <div class="input-container">
         <label>Data da revisão:</label>
@@ -17,6 +12,7 @@
       </div>
       <div class="input-container">
         <label for="nome">Descrição</label>
+        <!-- <input type="text" id="nome" name="nome" v-model="nome" placeholder="Digite o nome do revisao"> -->
         <textarea name="descricao" id="descricao" v-model="descricao" placeholder="Quais foram os serviços prestados?"></textarea>
       </div>
       <div class="input-container">
@@ -24,13 +20,12 @@
         <input type="text" id="preco" name="preco" v-model="preco" placeholder="Digite o preço">
       </div>
       <button id="submit-btn" type="submit">Cadastrar</button>
-      <button @click="$router.go(-1)" id="cancel-btn" type="button">Cancelar</button>
+      <button @click="cancel()" id="cancel-btn" type="button">Cancelar</button>
     </form>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import axios from 'axios';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -40,20 +35,16 @@ export default {
 
   data() {
     return {
-      carroId: '',
-      data: '',
-      descricao: '',
-      preco: ''
+      carroId: this.$store.state.props.reviews.reviewCarId,
+      data: this.$store.state.props.reviews.reviewDate,
+      descricao: this.$store.state.props.reviews.reviewDescription,
+      preco: this.$store.state.props.reviews.reviewPrice
     }
   },
 
   components: {
     VueDatePicker
   },
-
-  computed: mapState([
-    'cars', 'customers'
-  ]),
 
   methods: {
     submit() {
@@ -88,16 +79,25 @@ export default {
       formData.append('car_id', this.carroId);
       formData.append('description', this.descricao);
       formData.append('price', this.preco);
+      formData.append('_method', 'put');
 
-      axios.post('http://localhost/blegon/backend/api/reviews', formData)
+      const idUrl = this.$store.state.props.reviews.reviewId
+
+      axios.post(`http://localhost/blegon/backend/api/reviews/${idUrl}`, formData)
         .then(response => {
           console.log(response.data);
         })
         .catch(error => {
           console.log(error);
         });
-
+      
+      this.$store.dispatch('setReviewsProps', {});
       this.$router.push({ name: 'ReviewsPage' })
+      this.$store.dispatch('bindReloadFlag');
+    },
+    cancel() {
+      this.$store.dispatch('setReviewsProps', {});
+      this.$router.go(-1)
     }
   }
 }

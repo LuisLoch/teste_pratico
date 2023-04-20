@@ -30,9 +30,19 @@
 <script>
 import { mapState } from 'vuex'
 import axios from 'axios';
-
 export default {
-  name: 'ClientesPage',
+  name: 'ReviewsPage',
+
+  created() {
+    this.$store.dispatch('loadReviews');
+  },
+
+  mounted() {
+    if (this.$store.state.props.reloadFlag) {
+      this.$store.dispatch('bindReloadFlag');
+      window.location.reload();
+    }
+  },
 
   computed: mapState([
     'reviews',
@@ -40,31 +50,25 @@ export default {
 
   methods: {
     deleteReview(id) {
-      const formData = new FormData()
-      formData.append('_method', 'delete');
+      if (confirm("Excluir revisão?")) {
+        const formData = new FormData()
+        formData.append('_method', 'delete');
 
-      axios.post(`http://localhost/blegon/backend/api/reviews/${id}`, formData)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      
+        axios.post(`http://localhost/blegon/backend/api/reviews/${id}`, formData)
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+
         location.reload()
+      }
     },
-    // updateReview(review) {
-    //   //const formData = new FormData()
-    //   formData.append('_method', 'delete');
-
-    //   axios.post(`http://localhost/blegon/backend/api/reviews/${id}`, formData)
-    //     .then(response => {
-    //       console.log(response.data);
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-    // }
+    updateReview(review) {
+      this.$store.dispatch('setReviewsProps', { reviewId: review.id, reviewDate: review.data_review, reviewCarId: review.carro_id, reviewDescription: review.descricao, reviewPrice: review.preco });
+      this.$router.push({ name: 'ReviewsEditarPage' })
+    }
   }
 }
 </script>
@@ -81,24 +85,19 @@ export default {
   border-radius: 3px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
-
 .review, .label {
   padding: 0.5vh 0 0.5vh;
   display: flex;
 }
-
 hr {
   margin: 0 !important;
 }
-
 span {
   padding-left: 5px;
   text-align: left;
   background-color: transparent;
 }
-
 .reviews, .review {
-
   span.id {
     width: 7%;
   }
@@ -114,7 +113,6 @@ span {
   span.preco {
     width: 9%;
   }
-
   .actions {
     display: flex;
     flex-direction: row;
@@ -131,7 +129,6 @@ span {
       max-height: 30px;
       margin-left: 2%;
     }
-
     .delete{
       background-color: #FF4500;
     }
@@ -143,16 +140,13 @@ span {
     }
   }
 }
-
 .reviews span {
     font-weight: bold;
 }
-
 .review span {
     font-weight: 500;
     overflow: hidden;
 }
-
 .par {
   background-color: #fefefe;
 }
